@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swedish Daily 🇸🇪</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f6fa;
+  color: #203047;
+}
+
+header {
+  background: #1765a5;
+  color: white;
+  text-align: center;
+  padding: 30px 15px;
+}
+
+header h1 { margin: 0; }
+
+main {
+  max-width: 750px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px #00000010;
+}
+
+h2 { color: #1765a5; }
+
+.item {
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+}
+
+.swedish {
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.translation, .pronunciation {
+  margin-top: 5px;
+  color: #637184;
+}
+
+button {
+  border: none;
+  padding: 10px 14px;
+  margin: 5px 3px;
+  border-radius: 8px;
+  background: #1765a5;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover { background: #104a7b; }
+
+.favorite {
+  background: #e9a52c;
+  color: white;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #718096;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🇸🇪 Swedish Daily</h1>
+  <p>Learn Swedish a little every day!</p>
+  <div id="date"></div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Today's progress</h2>
+    <p id="progress">0 / 13 completed</p>
+    <button onclick="completeLesson()">Complete today's lesson ✓</button>
+  </div>
+
+  <section class="card">
+    <h2>📖 5 Swedish sentences</h2>
+    <div id="sentences"></div>
+  </section>
+
+  <section class="card">
+    <h2>📚 5 New words</h2>
+    <div id="words"></div>
+  </section>
+
+  <section class="card">
+    <h2>💬 2 Everyday expressions</h2>
+    <div id="expressions"></div>
+  </section>
+
+  <section class="card">
+    <h2>⭐ Random useful Swedish tip</h2>
+    <div id="tip"></div>
+  </section>
+
+  <section class="card">
+    <h2>❤️ My favourites</h2>
+    <div id="favorites">No favourites saved yet.</div>
+  </section>
+
+  <section class="card">
+    <h2>📅 Previous lessons</h2>
+    <p>Your daily progress is saved on this device.</p>
+    <div id="history"></div>
+  </section>
+
+</main>
+
+<footer>
+  Swedish Daily 🇸🇪 | One day at a time.
+</footer>
+
+<script>
+
+const lessons = [
+{
+sentences: [
+["Hur mår du?", "How are you?", "Hoor mor doo?"],
+["Vad gör du?", "What are you doing?", "Vah yer doo?"],
+["Jag vet inte.", "I don't know.", "Yah vet inteh."],
+["Det spelar ingen roll.", "It doesn't matter.", "Deh speh-lar ingen roll."],
+["Vi ses imorgon.", "See you tomorrow.", "Vee ses ee-mor-ron."]
+],
+words: [
+["Egentligen", "Actually", "Eh-yen-tlee-yen"],
+["Kanske", "Maybe", "Kan-sheh"],
+["Fortfarande", "Still", "For-t-far-an-deh"],
+["Försöka", "To try", "Fur-suh-ka"],
+["Behöver", "Need", "Behur-ver"]
+],
+expressions: [
+["Vad synd!", "What a shame!", "Vah synd!"],
+["Jag håller med.", "I agree.", "Yah holl-er med."]
+],
+tip: "The word 'ju' adds emphasis and often suggests something is already known. Example: Det vet du ju! = You already know that!"
+},
+{
+sentences: [
+["Jag är på väg.", "I'm on my way.", "Yah air paw vay."],
+["Kan jag få en kaffe?", "Can I have a coffee?", "Kan yah foh en kaffe?"],
+["Vad kostar det?", "How much does it cost?", "Vah kostar deh?"],
+["Jag förstår inte.", "I don't understand.", "Yah fur-stor inte."],
+["Vi hörs senare.", "Talk to you later.", "Vee hurts senare."]
+],
+words: [
+["Billigt", "Cheap", "Billigt"],
+["Dyrt", "Expensive", "Dyrt"],
+["Försiktig", "Careful", "Fur-siktig"],
+["Möjligt", "Possible", "Moy-ligt"],
+["Plötsligt", "Suddenly", "Pluts-ligt"]
+],
+expressions: [
+["Ingen fara!", "No worries!", "Ingen fara!"],
+["Det ordnar sig.", "It will work out.", "Deh ordnar say."]
+],
+tip: "In Swedish, 'sj' has a distinctive sound that doesn't have an exact English equivalent. Listen to native speakers to practise it."
+},
+{
+sentences: [
+["Jag behöver hjälp.", "I need help.", "Yah behur-ver yelp."],
+["Var ligger stationen?", "Where is the station?", "Var ligger stationen?"],
+["Jag kommer snart.", "I'll be there soon.", "Yah kommer snart."],
+["Det låter bra.", "That sounds good.", "Deh loh-ter bra."],
+["Ha en trevlig dag!", "Have a nice day!", "Hah en trevlig dag!"]
+],
+words: [
+["Alltid", "Always", "All-tid"],
+["Aldrig", "Never", "Al-drig"],
+["Ibland", "Sometimes", "Ee-bland"],
+["Snart", "Soon", "Snart"],
+["Tillsammans", "Together", "Till-sam-mans"]
+],
+expressions: [
+["Absolut!", "Absolutely!", "Absolut!"],
+["Vad roligt!", "How fun!", "Vah roligt!"]
+],
+tip: "Swedes often say 'tack' when accepting something, including when someone offers them a cup of coffee."
+}
+];
+
+const today = new Date();
+const dateKey = today.toISOString().slice(0,10);
+const dayNumber = Math.floor(
+  Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) /
+  86400000
+);
+
+const lesson = lessons[((dayNumber % lessons.length) + lessons.length) % lessons.length];
+
+document.getElementById("date").textContent =
+  today.toLocaleDateString("en-GB", {
+    weekday:"long", day:"numeric", month:"long", year:"numeric"
+  });
+
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    alert("Audio is not supported by this browser.");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "sv-SE";
+  utterance.rate = 0.85;
+
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.lang.toLowerCase().startsWith("sv"));
+
+  if (voice) utterance.voice = voice;
+
+  speechSynthesis.speak(utterance);
+}
+
+function renderItems(items, container, type) {
+  container.innerHTML = "";
+
+  items.forEach((item, index) => {
+    const [swedish, english, pronunciation] = item;
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    const title = document.createElement("div");
+    title.className = "swedish";
+    title.textContent = (index + 1) + ". " + swedish;
+
+    const translation = document.createElement("div");
+    translation.className = "translation";
+    translation.textContent = "🇬🇧 " + english;
+
+    const pronunciationDiv = document.createElement("div");
+    pronunciationDiv.className = "pronunciation";
+    pronunciationDiv.textContent = "🔊 Pronunciation: " + pronunciation;
+
+    const audio = document.createElement("button");
+    audio.textContent = "▶ Listen";
+    audio.onclick = () => speak(swedish);
+
+    const save = document.createElement("button");
+    save.textContent = "♥ Save";
+    save.className = "favorite";
+    save.onclick = () => addFavorite(swedish, english);
+
+    div.append(title, translation, pronunciationDiv, audio, save);
+    container.appendChild(div);
+  });
+}
+
+function addFavorite(swedish, english) {
+  if (!favorites.some(f => f.swedish === swedish)) {
+    favorites.push({swedish, english});
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    showFavorites();
+  }
+}
+
+function showFavorites() {
+  const container = document.getElementById("favorites");
+  container.innerHTML = "";
+
+  if (!favorites.length) {
+    container.textContent = "No favourites saved yet.";
+    return;
+  }
+
+  favorites.forEach(f => {
+    const p = document.createElement("p");
+    p.textContent = "🇸🇪 " + f.swedish + " — 🇬🇧 " + f.english;
+    container.appendChild(p);
+  });
+}
+
+function completeLesson() {
+  let completed = JSON.parse(localStorage.getItem("completed") || "{}");
+  completed[dateKey] = true;
+
+  localStorage.setItem("completed", JSON.stringify(completed));
+  showProgress();
+}
+
+function showProgress() {
+  const completed = JSON.parse(localStorage.getItem("completed") || "{}");
+  const done = completed[dateKey];
+
+  document.getElementById("progress").textContent =
+    done ? "13 / 13 completed 🎉" : "0 / 13 completed";
+
+  document.querySelector("#progress").style.color =
+    done ? "green" : "#203047";
+}
+
+function showHistory() {
+  const completed = JSON.parse(localStorage.getItem("completed") || "{}");
+  const container = document.getElementById("history");
+
+  container.innerHTML = "";
+
+  Object.keys(completed).sort().reverse().forEach(date => {
+    const p = document.createElement("p");
+    p.textContent = "✓ " + date;
+    container.appendChild(p);
+  });
+
+  if (!Object.keys(completed).length) {
+    container.textContent = "No completed lessons yet.";
+  }
+}
+
+renderItems(lesson.sentences, document.getElementById("sentences"));
+renderItems(lesson.words, document.getElementById("words"));
+renderItems(lesson.expressions, document.getElementById("expressions"));
+
+document.getElementById("tip").textContent = lesson.tip;
+
+showFavorites();
+showProgress();
+showHistory();
+
+</script>
+
+</body>
+</html>
